@@ -282,6 +282,7 @@ Elm.Bingo.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Bingo",
    $Basics = Elm.Basics.make(_elm),
+   $BingoUtils = Elm.BingoUtils.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $Html$Events = Elm.Html.Events.make(_elm),
@@ -365,10 +366,60 @@ Elm.Bingo.make = function (_elm) {
                                   return _.points;
                                },
                                model.entries)]],
+              model);
+            case "UpdatePhraseInput":
+            return _U.replace([["phraseInput"
+                               ,action._0]],
+              model);
+            case "UpdatePointsInput":
+            return _U.replace([["pointsInput"
+                               ,action._0]],
               model);}
          _U.badCase($moduleName,
-         "between lines 57 and 76");
+         "between lines 67 and 92");
       }();
+   });
+   var UpdatePointsInput = function (a) {
+      return {ctor: "UpdatePointsInput"
+             ,_0: a};
+   };
+   var UpdatePhraseInput = function (a) {
+      return {ctor: "UpdatePhraseInput"
+             ,_0: a};
+   };
+   var entryForm = F2(function (address,
+   model) {
+      return A2($Html.div,
+      _L.fromArray([]),
+      _L.fromArray([A2($Html.input,
+                   _L.fromArray([$Html$Attributes.type$("text")
+                                ,$Html$Attributes.placeholder("Phrase")
+                                ,$Html$Attributes.value(model.phraseInput)
+                                ,$Html$Attributes.name("phrase")
+                                ,$Html$Attributes.autofocus(true)
+                                ,A2($BingoUtils.onInput,
+                                address,
+                                UpdatePhraseInput)]),
+                   _L.fromArray([]))
+                   ,A2($Html.input,
+                   _L.fromArray([$Html$Attributes.type$("number")
+                                ,$Html$Attributes.placeholder("Points")
+                                ,$Html$Attributes.value(model.pointsInput)
+                                ,$Html$Attributes.name("points")
+                                ,A2($BingoUtils.onInput,
+                                address,
+                                UpdatePointsInput)]),
+                   _L.fromArray([]))
+                   ,A2($Html.button,
+                   _L.fromArray([$Html$Attributes.$class("add")]),
+                   _L.fromArray([$Html.text("Add")]))
+                   ,A2($Html.h2,
+                   _L.fromArray([]),
+                   _L.fromArray([$Html.text(A2($Basics._op["++"],
+                   model.phraseInput,
+                   A2($Basics._op["++"],
+                   " ",
+                   model.pointsInput)))]))]));
    });
    var Mark = function (a) {
       return {ctor: "Mark",_0: a};
@@ -419,6 +470,7 @@ Elm.Bingo.make = function (_elm) {
       return A2($Html.div,
       _L.fromArray([$Html$Attributes.id("container")]),
       _L.fromArray([pageHeader
+                   ,A2(entryForm,address,model)
                    ,A2(entryList,
                    address,
                    model.entries)
@@ -456,14 +508,24 @@ Elm.Bingo.make = function (_elm) {
                                              ,A3(newEntry,
                                              "Rock-Star Ninja",
                                              400,
-                                             4)])};
+                                             4)])
+                      ,nextId: 5
+                      ,phraseInput: ""
+                      ,pointsInput: ""};
    var main = $StartApp.start({_: {}
                               ,model: initialModel
                               ,update: update
                               ,view: view});
-   var Model = function (a) {
-      return {_: {},entries: a};
-   };
+   var Model = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,entries: a
+             ,nextId: d
+             ,phraseInput: b
+             ,pointsInput: c};
+   });
    var Entry = F4(function (a,
    b,
    c,
@@ -483,6 +545,8 @@ Elm.Bingo.make = function (_elm) {
                        ,Sort: Sort
                        ,Delete: Delete
                        ,Mark: Mark
+                       ,UpdatePhraseInput: UpdatePhraseInput
+                       ,UpdatePointsInput: UpdatePointsInput
                        ,update: update
                        ,title: title
                        ,pageHeader: pageHeader
@@ -491,9 +555,55 @@ Elm.Bingo.make = function (_elm) {
                        ,totalPoints: totalPoints
                        ,totalItem: totalItem
                        ,entryList: entryList
+                       ,entryForm: entryForm
                        ,view: view
                        ,main: main};
    return _elm.Bingo.values;
+};
+Elm.BingoUtils = Elm.BingoUtils || {};
+Elm.BingoUtils.make = function (_elm) {
+   "use strict";
+   _elm.BingoUtils = _elm.BingoUtils || {};
+   if (_elm.BingoUtils.values)
+   return _elm.BingoUtils.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "BingoUtils",
+   $Basics = Elm.Basics.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm);
+   var parseInt = function (string) {
+      return function () {
+         var _v0 = $String.toInt(string);
+         switch (_v0.ctor)
+         {case "Err": return 0;
+            case "Ok": return _v0._0;}
+         _U.badCase($moduleName,
+         "between lines 24 and 28");
+      }();
+   };
+   var onInput = F2(function (address,
+   f) {
+      return A3($Html$Events.on,
+      "input",
+      $Html$Events.targetValue,
+      function (v) {
+         return A2($Signal.message,
+         address,
+         f(v));
+      });
+   });
+   _elm.BingoUtils.values = {_op: _op
+                            ,onInput: onInput
+                            ,parseInt: parseInt};
+   return _elm.BingoUtils.values;
 };
 Elm.Char = Elm.Char || {};
 Elm.Char.make = function (_elm) {
