@@ -11,6 +11,19 @@ import Signal exposing (Address)
 
 -- MODEL
 
+type alias Entry =
+  { phrase: String, 
+    points: Int, 
+    wasSpoken: Bool, 
+    id: Int 
+  }
+
+
+type alias Model =
+  { entries: List Entry }
+
+
+initialModel : Model
 initialModel =
   { entries = 
       [ newEntry "Doing Agile" 200 2,
@@ -21,6 +34,7 @@ initialModel =
   }
 
 
+newEntry : String -> Int -> Int -> Entry
 newEntry phrase points id = 
   { phrase = phrase,
     points = points,
@@ -38,6 +52,7 @@ type Action
   | Mark Int
 
 
+update : Action -> Model -> Model
 update action model =
   case action of
     NoOp ->
@@ -62,7 +77,7 @@ update action model =
 
 
 -- VIEW 
-
+title : String -> Int -> Html
 title message times =
   message ++ " "
     |> toUpper
@@ -71,10 +86,12 @@ title message times =
     |> text
 
 
+pageHeader : Html
 pageHeader =
   h1 [ id "logo", class "classy" ] [ title "bingo!" 3 ]
 
 
+pageFooter : Html
 pageFooter =
   footer [ ]
     [ a [ href "https://pagramticstudio.com" ] 
@@ -82,6 +99,7 @@ pageFooter =
     ]
 
 
+entryItem : Address Action -> Entry -> Html
 entryItem address entry =
   li 
     [ classList [ ("highlight", entry.wasSpoken) ],
@@ -95,13 +113,44 @@ entryItem address entry =
     ]
 
 
+totalPoints : List Entry -> Int
+totalPoints entries =
+  entries
+    |> List.filter .wasSpoken
+    |> List.foldl (\e acc -> acc + e.points) 0
+
+--totalPoints entries =
+--  entries
+--    |> List.filter .wasSpoken
+--    |> List.map .points
+--    |> List.sum
+
+-- totalPoints entries =
+  --let
+  --  spokenEntries = List.filter .wasSpoken entries
+  --in
+  --  List.sum (List.map .points spokenEntries)
+
+
+totalItem : Int -> Html
+totalItem total =
+  li
+    [ class "total" ]
+    [ span [ class "label" ] [ text "Total" ],
+      span [ class "points" ] [ text (toString total)]
+    ]
+
+
+entryList : Address Action -> List Entry -> Html
 entryList address entries =
   let 
     entryItems = List.map (entryItem address) entries
+    items = entryItems ++ [ totalItem (totalPoints entries) ]
   in
-    ul [ ] entryItems
+    ul [ ] items
 
 
+view : Address Action -> Model -> Html
 view address model =
   div [ id "container" ]
     [ pageHeader, 
@@ -113,12 +162,10 @@ view address model =
     ]
 
 
--- WIRE IT ALL TOGETHER
+-- WIRE IT ALL TOGETHER!
 
+main : Signal Html
 main = 
-  --  initialModel
-  --    |> update Sort
-  --    |> view
   StartApp.start
     { model = initialModel,
       view = view,
