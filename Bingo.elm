@@ -31,14 +31,10 @@ type alias Model =
 initialModel : Model
 initialModel =
   { entries = 
-      [ newEntry "Doing Agile" 200 2,
-        newEntry "In The Cloud" 300 3,
-        newEntry "Future-Proof" 100 1,
-        newEntry "Rock-Star Ninja" 400 4
-      ],
+      [ ],
     phraseInput = "",
     pointsInput = "",
-    nextId = 5
+    nextId = 1
   }
 
 
@@ -60,6 +56,7 @@ type Action
   | Mark Int
   | UpdatePhraseInput String
   | UpdatePointsInput String
+  | Add
 
 
 update : Action -> Model -> Model
@@ -90,6 +87,23 @@ update action model =
 
     UpdatePointsInput contents ->
       { model | pointsInput <- contents }
+
+    Add ->
+      let
+        entryToAdd = 
+          newEntry model.phraseInput (Utils.parseInt model.pointsInput) model.nextId
+        isInvalid model = 
+          String.isEmpty model.phraseInput || String.isEmpty model.pointsInput
+      in
+        if isInvalid model
+        then model
+        else
+          { model |
+              phraseInput <- "",
+              pointsInput <- "",
+              entries     <- entryToAdd :: model.entries,
+              nextId      <- model.nextId + 1
+          }
 
 
 -- VIEW 
@@ -186,7 +200,7 @@ entryForm address model =
           Utils.onInput address UpdatePointsInput
         ]
         [ ],
-      button [ class "add" ] [ text "Add" ],
+      button [ class "add", onClick address Add ] [ text "Add" ],
       h2
         [ ]
         [ text ( model.phraseInput ++ " " ++ model.pointsInput ) ]
